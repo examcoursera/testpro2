@@ -1,8 +1,8 @@
 # Import required libraries
 import pandas as pd
 import dash
-import dash_html_components as html
-import dash_core_components as dcc
+from dash import html
+from dash import dcc
 from dash.dependencies import Input, Output
 import plotly.express as px
 
@@ -42,7 +42,7 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
 
                                 html.P("Payload range (Kg):"),
                                 # TASK 3: Add a slider to select payload range
-                                dcc.RangeSlider(id='range-slider', min=0, max=10000, step=1000,
+                                dcc.RangeSlider(id='payload-slider', min=0, max=10000, step=1000,
                                                 marks={0: '0', 2500: '2500', 5000: '5000', 7500: '7500', 10000: '10000'},
                                                 value=[min_payload, max_payload]),
 
@@ -62,16 +62,10 @@ def get_pie_chart(entered_site):
     grouped_fdf = filtered_df.groupby(['class'])['Launch Site'].count().reset_index()
     
     if str(entered_site) == 'ALL':
-        fig = px.pie(spacex_df, values='class', 
-        names='Launch Site', 
-        title='Total success launches')
+        fig = px.pie(spacex_df, values='class', names='Launch Site', title='Total success launches')
         return fig
     else:
-        fig = px.pie(grouped_fdf, 
-        values='Launch Site', 
-        names='class', 
-        title='Total Success Launches for '+str(entered_site), 
-        color='class')
+        fig = px.pie(grouped_fdf, values='Launch Site', names='class', title='Total Success Launches for '+str(entered_site), color='class')
         return fig
 
 # TASK 4:
@@ -81,7 +75,7 @@ def get_pie_chart(entered_site):
     [Input(component_id='site-dropdown', component_property='value'),
     Input(component_id='payload-slider', component_property='value')])
 
-def update_bar_chart(slider_range,entered_site):
+def update_bar_chart(entered_site,slider_range):
     
     low, high = slider_range
     mask = (spacex_df['Payload Mass (kg)'] > low) & (spacex_df['Payload Mass (kg)'] < high)
@@ -101,4 +95,4 @@ def update_bar_chart(slider_range,entered_site):
        
 # Run the app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()
